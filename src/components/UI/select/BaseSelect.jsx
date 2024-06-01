@@ -1,7 +1,7 @@
-import React from "react";
-import classes from "./BaseSelect.module.css";
+import React from 'react'
+import classes from './BaseSelect.module.css'
 
-const BaseSelect = ({ options, defaultValue = "Выбрать", value, onChange }) => {
+const BaseSelect = ({ options, defaultValue = 'Выбрать', value, onChange }) => {
   return (
     <div>
       <select
@@ -17,7 +17,7 @@ const BaseSelect = ({ options, defaultValue = "Выбрать", value, onChange 
         ))}
       </select>
     </div>
-  );
-};
+  )
+}
 
-export default BaseSelect;
+export default BaseSelect
