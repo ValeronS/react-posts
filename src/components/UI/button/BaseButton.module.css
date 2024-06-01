@@ -6,3 +6,8 @@
     border: 1px solid teal;
     cursor: pointer;
 }
+.BaseBtn.disabled {
+    cursor: not-allowed;
+    color: gray;
+    border-color: gray;
+}

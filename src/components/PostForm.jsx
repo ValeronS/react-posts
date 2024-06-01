@@ -25,7 +25,12 @@ const PostForm = ({ create }) => {
         value={post.body}
         onChange={(e) => setPost({ ...post, body: e.target.value })}
       />
-      <BaseButton onClick={addPost}>Сохранить пост</BaseButton>
+      <BaseButton
+        disabled={!post.title.length || !post.body.length}
+        onClick={addPost}
+      >
+        Сохранить пост
+      </BaseButton>
     </form>
   )
 }
