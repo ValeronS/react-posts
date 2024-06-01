@@ -1,47 +1,61 @@
 import "./styles/App.css";
-import { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import PostList from "./components/PostList";
-import BaseButton from "./components/UI/button/BaseButton";
-import BaseInput from "./components/UI/input/BaseInput";
+import PostForm from "./components/PostForm";
+import PostFilter from "./components/PostFilter";
 
 function App() {
   const bodyInputRef = useRef();
 
   const [posts, setPosts] = useState([
-    { id: 0, title: "Hello World!", body: "Description" },
-    { id: 1, title: "Hello World!", body: "Description" },
-    { id: 2, title: "Hello World!", body: "Description" },
-    { id: 3, title: "Hello World!", body: "Description" },
-    { id: 4, title: "Hello World!", body: "Description" },
-    { id: 5, title: "Hello World!", body: "Description" },
+    { id: 0, title: "1 one", body: "6 six" },
+    { id: 1, title: "2 two", body: "5 five" },
+    { id: 2, title: "3 three", body: "4 four" },
+    { id: 3, title: "4 four", body: "3 three" },
+    { id: 4, title: "5 five", body: "2 two" },
+    { id: 5, title: "6 six", body: "1 one" },
   ]);
 
-  const [post, setPost] = useState({ title: "", body: "" });
+  const [filter, setFilter] = useState({
+    sort: "",
+    query: "",
+  });
 
-  const addPost = (e) => {
-    e.preventDefault();
-    setPosts([...posts, { ...post, id: Date.now() }]);
-    setPost({ title: "", body: "" });
+  const sortedPosts = useMemo(() => {
+    if (filter.sort)
+      return [...posts].sort((a, b) =>
+        a[filter.sort].localeCompare(b[filter.sort]),
+      );
+    return posts;
+  }, [filter.sort, posts]);
+
+  const sortedAndSearchedPosts = useMemo(() => {
+    if (filter.query)
+      return sortedPosts.filter(
+        (post) =>
+          post.title.toLowerCase().includes(filter.query.toLowerCase()) ||
+          post.body.toLowerCase().includes(filter.query.toLowerCase()),
+      );
+    return sortedPosts;
+  }, [filter.query, sortedPosts]);
+
+  const createPost = (post) => {
+    setPosts([...posts, post]);
+  };
+  const removePost = (post) => {
+    setPosts(posts.filter((p) => p.id !== post.id));
   };
 
   return (
     <div className="App">
-      <form>
-        <BaseInput
-          type="text"
-          placeholder={"Название поста"}
-          value={post.title}
-          onChange={(e) => setPost({ ...post, title: e.target.value })}
-        />
-        <BaseInput
-          type="text"
-          placeholder={"Описание поста"}
-          value={post.body}
-          onChange={(e) => setPost({ ...post, body: e.target.value })}
-        />
-        <BaseButton onClick={addPost}>Сохранить пост</BaseButton>
-      </form>
-      <PostList posts={posts} title={"Список постов 1"} />
+      <PostForm create={createPost} />
+      <hr style={{ margin: "15px 0" }} />
+      <PostFilter filter={filter} setFilter={setFilter} />)
+      <PostList
+        remove={removePost}
+        posts={sortedAndSearchedPosts}
+        title={"Список постов 1"}
+      />
     </div>
   );
 }
