@@ -1,23 +1,19 @@
 import './styles/App.css'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import BaseButton from './components/UI/button/BaseButton'
 import BaseModal from './components/UI/modal/BaseModal'
 import PostFilter from './components/PostFilter'
 import PostForm from './components/PostForm'
 import PostList from './components/PostList'
 import { usePosts } from './hooks/usePosts'
+import PostService from './services/PostService'
+import Loader from './components/UI/loader/Loader'
 
 function App() {
   const bodyInputRef = useRef()
 
-  const [posts, setPosts] = useState([
-    { id: 0, title: '1 one', body: '6 six' },
-    { id: 1, title: '2 two', body: '5 five' },
-    { id: 2, title: '3 three', body: '4 four' },
-    { id: 3, title: '4 four', body: '3 three' },
-    { id: 4, title: '5 five', body: '2 two' },
-    { id: 5, title: '6 six', body: '1 one' },
-  ])
+  const [posts, setPosts] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
   const [filter, setFilter] = useState({
     sort: '',
     query: '',
@@ -34,24 +30,45 @@ function App() {
     setPosts(posts.filter((p) => p.id !== post.id))
   }
 
+  async function fetchPosts() {
+    setIsLoading(true)
+    const posts = await PostService.getAll()
+    setPosts(posts)
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
   return (
     <div className="App">
       <BaseModal visible={modalVisible} setVisible={setModalVisible}>
         <PostForm create={createPost} />
       </BaseModal>
-      <BaseButton
-        onClick={() => setModalVisible(true)}
-        style={{ marginTop: '15px' }}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginTop: '15px',
+        }}
       >
-        Добавить пост
-      </BaseButton>
+        <BaseButton onClick={() => fetchPosts()}>Получить посты</BaseButton>
+        <BaseButton onClick={() => setModalVisible(true)}>
+          Добавить пост
+        </BaseButton>
+      </div>
       <PostFilter filter={filter} setFilter={setFilter} />
 
-      <PostList
-        remove={removePost}
-        posts={sortedAndSearchedPosts}
-        title={'Список постов 1'}
-      />
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <PostList
+          remove={removePost}
+          posts={sortedAndSearchedPosts}
+          title={'Список постов 1'}
+        />
+      )}
     </div>
   )
 }
