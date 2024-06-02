@@ -1,10 +1,11 @@
 import './styles/App.css'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import BaseButton from './components/UI/button/BaseButton'
 import BaseModal from './components/UI/modal/BaseModal'
 import PostFilter from './components/PostFilter'
 import PostForm from './components/PostForm'
 import PostList from './components/PostList'
+import { usePosts } from './hooks/usePosts'
 
 function App() {
   const bodyInputRef = useRef()
@@ -23,23 +24,7 @@ function App() {
   })
   const [modalVisible, setModalVisible] = useState(false)
 
-  const sortedPosts = useMemo(() => {
-    if (filter.sort)
-      return [...posts].sort((a, b) =>
-        a[filter.sort].localeCompare(b[filter.sort]),
-      )
-    return posts
-  }, [filter.sort, posts])
-
-  const sortedAndSearchedPosts = useMemo(() => {
-    if (filter.query)
-      return sortedPosts.filter(
-        (post) =>
-          post.title.toLowerCase().includes(filter.query.toLowerCase()) ||
-          post.body.toLowerCase().includes(filter.query.toLowerCase()),
-      )
-    return sortedPosts
-  }, [filter.query, sortedPosts])
+  const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
   const createPost = (post) => {
     setPosts([...posts, post])
