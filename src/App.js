@@ -6,6 +6,7 @@ import PostFilter from './components/PostFilter'
 import PostForm from './components/PostForm'
 import PostList from './components/PostList'
 import { usePosts } from './hooks/usePosts'
+import { useFetch } from './hooks/useFetch'
 import PostService from './services/PostService'
 import Loader from './components/UI/loader/Loader'
 
@@ -13,14 +14,16 @@ function App() {
   const bodyInputRef = useRef()
 
   const [posts, setPosts] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
   const [filter, setFilter] = useState({
     sort: '',
     query: '',
   })
   const [modalVisible, setModalVisible] = useState(false)
-
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+  const [fetchPosts, isLoading, postError] = useFetch(async () => {
+    const posts = await PostService.getAll()
+    setPosts(posts)
+  })
 
   const createPost = (post) => {
     setPosts([...posts, post])
@@ -28,13 +31,6 @@ function App() {
   }
   const removePost = (post) => {
     setPosts(posts.filter((p) => p.id !== post.id))
-  }
-
-  async function fetchPosts() {
-    setIsLoading(true)
-    const posts = await PostService.getAll()
-    setPosts(posts)
-    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -60,6 +56,12 @@ function App() {
       </div>
       <PostFilter filter={filter} setFilter={setFilter} />
 
+      {postError && (
+        <div>
+          <h2>Произошла ошибка</h2>
+          <p>{postError}</p>
+        </div>
+      )}
       {isLoading ? (
         <Loader />
       ) : (
