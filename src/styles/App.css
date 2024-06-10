@@ -9,9 +9,10 @@
     justify-content: center;
 }
 
-.App {
+.Posts {
     width: 800px;
     height: 100vh;
+    margin: 0 auto 0 auto;
 }
 
 .post {
