@@ -2,13 +2,15 @@ import './styles/App.css'
 import React, { useEffect, useRef, useState } from 'react'
 import BaseButton from './components/UI/button/BaseButton'
 import BaseModal from './components/UI/modal/BaseModal'
+import Pagination from './components/UI/pagination/Pagination'
+import Loader from './components/UI/loader/Loader'
 import PostFilter from './components/PostFilter'
 import PostForm from './components/PostForm'
 import PostList from './components/PostList'
 import { usePosts } from './hooks/usePosts'
 import { useFetch } from './hooks/useFetch'
 import PostService from './services/PostService'
-import Loader from './components/UI/loader/Loader'
+import { getTotalCount } from './utils'
 
 function App() {
   const bodyInputRef = useRef()
@@ -19,10 +21,18 @@ function App() {
     query: '',
   })
   const [modalVisible, setModalVisible] = useState(false)
+  const [totalPages, setTotalPages] = useState(0)
+  const [limit, setLimit] = useState(10)
+  const [page, setPage] = useState(1)
+
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
   const [fetchPosts, isLoading, postError] = useFetch(async () => {
-    const posts = await PostService.getAll()
-    setPosts(posts)
+    const response = await PostService.getAll(limit, page)
+    setPosts(response.data)
+    if (response.headers['x-total-count']) {
+      const totalCount = getTotalCount(response.headers['x-total-count'], limit)
+      setTotalPages(totalCount)
+    }
   })
 
   const createPost = (post) => {
@@ -35,7 +45,7 @@ function App() {
 
   useEffect(() => {
     fetchPosts()
-  }, [])
+  }, [page])
 
   return (
     <div className="App">
@@ -65,11 +75,18 @@ function App() {
       {isLoading ? (
         <Loader />
       ) : (
-        <PostList
-          remove={removePost}
-          posts={sortedAndSearchedPosts}
-          title={'Список постов 1'}
-        />
+        <div>
+          <PostList
+            remove={removePost}
+            posts={sortedAndSearchedPosts}
+            title={`Список постов ${page}`}
+          />
+          <Pagination
+            totalPages={totalPages}
+            page={page}
+            newPage={(p) => setPage(p)}
+          />
+        </div>
       )}
     </div>
   )

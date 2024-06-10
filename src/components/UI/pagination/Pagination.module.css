@@ -1,0 +1,17 @@
+.BasePagination {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: end;
+    margin: 8px 0;
+}
+.PageNumber {
+    cursor: pointer;
+    padding: 8px;
+}
+.CurrentPage {
+    font-weight: bold;
+    background-color: lightgray;
+    border-radius: 5px;
+    cursor: default;
+}
