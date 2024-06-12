@@ -48,7 +48,7 @@ const Posts = () => {
   }, [page])
 
   return (
-    <div className="Posts">
+    <div className="Posts container">
       <BaseModal visible={modalVisible} setVisible={setModalVisible}>
         <PostForm create={createPost} />
       </BaseModal>

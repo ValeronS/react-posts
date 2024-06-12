@@ -1,36 +1,40 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 #root {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.container {
+  width: 800px;
+  margin: 0 auto 0 auto;
 }
 
 .Posts {
-    width: 800px;
-    height: 100vh;
-    margin: 0 auto 0 auto;
+  height: 100vh;
+  margin: 0 auto 0 auto;
 }
 
 .post {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 15px;
-    padding: 15px;
-    border: 2px solid teal;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding: 15px;
+  border: 2px solid teal;
 }
 
 .post__btns {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .PostDetailed {
-    width: 800px;
-    margin: 30px auto ;
+  margin: 30px auto;
 }

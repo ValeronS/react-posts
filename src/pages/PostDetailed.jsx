@@ -28,7 +28,7 @@ const PostDetailed = () => {
     }
   }, [params.id])
   return (
-    <div className="PostDetailed">
+    <div className="PostDetailed container">
       <h1 style={{ textAlign: 'center', marginBottom: '10px' }}>
         Детали поста ID {params.id}
       </h1>
