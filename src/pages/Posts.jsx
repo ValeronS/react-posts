@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { usePosts } from '../hooks/usePosts'
 import { useFetch } from '../hooks/useFetch'
+import { useObserver } from '../hooks/useObserver'
 import PostService from '../services/PostService'
 import { getTotalCount } from '../utils'
 import BaseModal from '../components/UI/modal/BaseModal'
@@ -14,6 +15,7 @@ import '../styles/App.css'
 
 const Posts = () => {
   const bodyInputRef = useRef()
+  const lastElementRef = useRef()
 
   const [posts, setPosts] = useState([])
   const [filter, setFilter] = useState({
@@ -28,7 +30,7 @@ const Posts = () => {
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
   const [fetchPosts, isLoading, postError] = useFetch(async () => {
     const response = await PostService.getAll(limit, page)
-    setPosts(response.data)
+    setPosts([...posts, ...response.data])
     if (response.headers['x-total-count']) {
       const totalCount = getTotalCount(response.headers['x-total-count'], limit)
       setTotalPages(totalCount)
@@ -42,6 +44,10 @@ const Posts = () => {
   const removePost = (post) => {
     setPosts(posts.filter((p) => p.id !== post.id))
   }
+
+  useObserver(lastElementRef, page < totalPages, isLoading, () =>
+    setPage(page + 1),
+  )
 
   useEffect(() => {
     fetchPosts()
@@ -72,22 +78,22 @@ const Posts = () => {
           <p>{postError}</p>
         </div>
       )}
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <div>
-          <PostList
-            remove={removePost}
-            posts={sortedAndSearchedPosts}
-            title={`Список постов ${page}`}
-          />
-          <Pagination
-            totalPages={totalPages}
-            page={page}
-            newPage={(p) => setPage(p)}
-          />
-        </div>
-      )}
+
+      <div>
+        <PostList
+          remove={removePost}
+          posts={sortedAndSearchedPosts}
+          title="Список постов"
+        />
+        <div ref={lastElementRef}></div>
+        <Pagination
+          totalPages={totalPages}
+          page={page}
+          newPage={(p) => setPage(p)}
+        />
+      </div>
+
+      {isLoading && <Loader />}
     </div>
   )
 }
