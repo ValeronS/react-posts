@@ -51,7 +51,7 @@ const Posts = () => {
 
   useEffect(() => {
     fetchPosts()
-  }, [page])
+  }, [page, limit])
 
   return (
     <div className="Posts container">
@@ -70,7 +70,12 @@ const Posts = () => {
           Добавить пост
         </BaseButton>
       </div>
-      <PostFilter filter={filter} setFilter={setFilter} />
+      <PostFilter
+        filter={filter}
+        setFilter={setFilter}
+        limit={limit}
+        setLimit={setLimit}
+      />
 
       {postError && (
         <div>
